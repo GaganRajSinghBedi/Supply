@@ -162,16 +162,29 @@ app.get('/block', async function(req, res) {
 		res.json(getErrorMessage('\'blockId\''));
 		return;
 	}
+	try {
+		let message = await query.getBlockByNumber(peer, channelName, blockId, "Jim", "Org1");
+		var result_query = message.data.data[0].payload.data.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[1].rwset.writes[0].value;
+		var temp_ = JSON.parse(result_query);
+		var taapman = temp_.temperature;	
+		var timestamp = message.data.data[0].payload.header.channel_header.timestamp;
 
-	let message = await query.getBlockByNumber(peer, channelName, blockId, "Jim", "Org1");
-	var result_query = message.data.data[0].payload.data.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[1].rwset.writes[0].value;
-	var temp_ = JSON.parse(result_query);
-	var taapman = temp_.temperature;	
-	var timestamp = message.data.data[0].payload.header.channel_header.timestamp;
-
-	var output = [ blockId, timestamp, taapman ];
-	console.log(output);
-	res.send(output);
+		var output = {
+			blockId: blockId,
+			timestamp: timestamp,
+			taapman: taapman,
+			blockFound: true
+		};
+		console.log(output);
+		res.send(output);
+	} catch(err) {
+		res.send({
+			blockId: 1,
+			timestamp: 0,
+			taapman: 24,
+			blockFound: false
+		})
+	}
 });
 
 

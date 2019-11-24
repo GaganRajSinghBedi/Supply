@@ -1,81 +1,53 @@
 import React, { Component } from 'react';
 import './App.css';
-import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { Button } from 'semantic-ui-react'
 
-import StatusButton from './components/StatusButton'
+import TruckStatus from './components/TruckStatus'
+import BlockTracker from './components/BlockTracker'
+
 import 'semantic-ui-css/semantic.min.css'
-import axios from 'axios'
-const STATUS_CANCELLED = "cancelled"
-const STATUS_PASSED = "passed"
-const STATUS_NOT_DETERMINED = "notDetermined"
-const percentage = 66;
 
-const notDetermined = {
-  loading: true,
-  color: "white"
+const TRUCK_STATUS = "TruckStatus"
+const BLOCK_TRACKER = "BlockTracker"
+function CurrentComponent(props) {
+  if(props.component == TRUCK_STATUS) {
+    return <TruckStatus />
+  } else {
+    return <BlockTracker />
+  }
 }
-
-const passed = {
-  loading: false,
-  color: "green"
-}
-
-const cancelled = {
-  loading: false,
-  color: "red"
-}
-
-const statusList = {
-  "cancelled": cancelled,
-  "notDetermined": notDetermined,
-  "passed": passed
-}
-
 class App extends Component {
   constructor(props) {
     super(props);
     // Don't call this.setState() here!
     this.state = { 
-      temperature: 100,
-      dispatchStatus: notDetermined,
-      warehouseOneStatus: notDetermined,
-      warehouseTwoStatus: notDetermined,
-      deliveryStatus: notDetermined
+      component: TRUCK_STATUS
     };
+    
   }
-  componentDidMount() {
-    // setInterval(() => {
-    //   axios.get('/nothing?key=%5B%221%22%5D').then((result) => {
-    //     this.setState({
-    //       color: result.data.critical ? 'red' : 'green'
-    //     })
-    //   })
-    // }, 10000);
-     setInterval(() => {
-      axios.get('/getDeliveryStatus').then((res) => {
-        this.setState({
-          dispatchStatus: statusList[res.data.dispatchStatus],
-          warehouseOneStatus: statusList[res.data.warehouseOneStatus],
-          warehouseTwoStatus: statusList[res.data.warehouseTwoStatus],
-          deliveryStatus: statusList[res.data.deliveryStatus]
-        })
-      })
-    }, 3000);
+  handleClick = (e) => {
+    console.log(e.target.innerHTML)
+    if(e.target.innerHTML == TRUCK_STATUS) {
+      this.setState({
+        component: TRUCK_STATUS
+      });
+    } else {
+      this.setState({
+        component: BLOCK_TRACKER
+      });
+    }
   }
   render() {
     return (
       <div className="App">
-        <div id="container">
-          <div id="left"><StatusButton text="dispatched" status={this.state.dispatchStatus}/></div>
-          <div id="middleOne"><StatusButton text="warehouse 1" status={this.state.warehouseOneStatus}/></div>
-          <div id="middleTwo"><StatusButton text="warehouse 2" status={this.state.warehouseTwoStatus}/></div>
-          <div id="right"><StatusButton text="delivered" status={this.state.deliveryStatus}/></div>
-        </div>
-        <div class="center">
-          <div id="temperature">
-            <CircularProgressbar value={this.state.temperature} text={`${this.state.temperature}\`C`} />;
-          </div>
+        <div className="buttons">
+          <Button.Group>
+            <Button onClick={this.handleClick} positive = {this.state.component == BLOCK_TRACKER}>{BLOCK_TRACKER}</Button>
+            <Button.Or />
+            <Button onClick={this.handleClick} positive = {this.state.component == TRUCK_STATUS}>{TRUCK_STATUS}</Button>
+          </Button.Group>
+          <CurrentComponent component={this.state.component} />
         </div>
       </div>
     );
