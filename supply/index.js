@@ -159,8 +159,12 @@ app.get('/block', async function(req, res) {
 	
 
 	if (!blockId) {
-		res.json(getErrorMessage('\'blockId\''));
-		return;
+		res.send({
+			blockId: 1,
+			timestamp: 0,
+			taapman: 24,
+			blockFound: false
+		})
 	}
 	try {
 		let message = await query.getBlockByNumber(peer, channelName, blockId, "Jim", "Org1");

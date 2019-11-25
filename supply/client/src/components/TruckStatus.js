@@ -47,23 +47,32 @@ class TruckStatus extends Component {
     };
   }
   componentDidMount() {
-    // setInterval(() => {
-    //   axios.get('/nothing?key=%5B%221%22%5D').then((result) => {
-    //     this.setState({
-    //       color: result.data.critical ? 'red' : 'green'
-    //     })
-    //   })
-    // }, 10000);
-    //  setInterval(() => {
-    //   axios.get('/getDeliveryStatus').then((res) => {
-    //     this.setState({
-    //       dispatchStatus: statusList[res.data.dispatchStatus],
-    //       warehouseOneStatus: statusList[res.data.warehouseOneStatus],
-    //       warehouseTwoStatus: statusList[res.data.warehouseTwoStatus],
-    //       deliveryStatus: statusList[res.data.deliveryStatus]
-    //     })
-    //   })
-    // }, 3000);
+    
+    setInterval(() => {
+      axios.get('/nothing?key=%5B%221%22%5D').then((result) => {
+        console.log(result.data.message)
+        var r;
+        try{
+          r = JSON.parse(result.data.message)
+          this.setState({
+            temperature: r.temperature
+          })
+        }
+        catch {}
+        
+      })
+    }, 10000);
+    
+     setInterval(() => {
+      axios.get('/getDeliveryStatus').then((res) => {
+        this.setState({
+          dispatchStatus: statusList[res.data.dispatchStatus],
+          warehouseOneStatus: statusList[res.data.warehouseOneStatus],
+          warehouseTwoStatus: statusList[res.data.warehouseTwoStatus],
+          deliveryStatus: statusList[res.data.deliveryStatus]
+        })
+      })
+    }, 3000);
   }
   render() {
     return (
@@ -74,7 +83,7 @@ class TruckStatus extends Component {
           <div id="middleTwo"><StatusButton text="warehouse 2" status={this.state.warehouseTwoStatus}/></div>
           <div id="right"><StatusButton text="delivered" status={this.state.deliveryStatus}/></div>
         </div>
-        <div class="center">
+        <div className="center">
           <div id="temperature">
             <CircularProgressbar value={this.state.temperature} text={`${this.state.temperature}\`C`} />;
           </div>

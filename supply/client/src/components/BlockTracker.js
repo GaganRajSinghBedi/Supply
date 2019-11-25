@@ -25,10 +25,11 @@ class BlockTracker extends Component {
     })
     axios.get('/block?block_no=' + e.target.value).then((result) => {
         if(result.data.blockFound) {
+            console.log(result.data);
             this.setState({
                 blockId: result.data.blockId,
-                timeStamp: result.data.timeStamp,
-                temperature: result.data.temperature,
+                timeStamp: result.data.timestamp,
+                temperature: result.data.taapman,
                 blockFound: true
             }) 
         } else {
@@ -64,7 +65,7 @@ class BlockTracker extends Component {
                 </List.Item>
             </List>
             ) : (
-                <h1>Block Not Found</h1>
+                <h1>No Relevant Data</h1>
             )}
         </Segment>
       </div>

@@ -30,7 +30,9 @@ type TemperatureDetails struct {
 	Temperature  			 string `json:"temperature"`
 }
 
-var threshold = 10
+var threshold1 = 10
+var threshold2 = 30
+
 
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
@@ -53,25 +55,21 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 
 func (s *SmartContract) addTemperature(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	
-	
 	var temperature = TemperatureDetails { Timestamp: args[1] , Temperature: args[2] }
 	
-	
 	temp, _ := strconv.Atoi(args[2])
-	if temp < threshold {
+	if (temp < threshold1 || temp > threshold2)  {
 		var notification = TemperatureDetails { Timestamp: args[1] , Temperature: args[2] }
 		payloadAsBytes, _ := json.Marshal(notification)
 		err := APIstub.SetEvent("notificationBreach",payloadAsBytes)
 		if err != nil {
 			return shim.Error("Error while setting event")
 		}
-	} else {
-		var temp_id = args[0]
-		recordAsBytes, _ := json.Marshal(temperature)
-		APIstub.PutState(temp_id,recordAsBytes)
-		
-	}
-	
+	} 
+	var temp_id = args[0]
+	recordAsBytes, _ := json.Marshal(temperature)
+	APIstub.PutState(temp_id,recordAsBytes)
+
 	return shim.Success(nil)
 
 }
